@@ -6,6 +6,8 @@ A simple HTTP Restful API test program made by QML. Only support GET and POST no
 
 <img src="https://github.com/lalakiwe/API-Tester/blob/master/screenshot/screenshot.png" alt="screenshot" width="450" height="240">
 
+<img src="https://github.com/lalakiwe/API-Tester/blob/master/screenshot/screenshot2.png" alt="screenshot" width="450" height="240">
+
 **How to use**
  - Windows 7 64bit
 	 - unzip win_runtime.zip
