@@ -3,8 +3,11 @@ import QtQuick.Controls 1.2
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
+import QtWebKit 3.0
+
 
 ApplicationWindow {
+    visible: true
     title: qsTr("API Tester")
     width: Screen.desktopAvailableWidth * 0.7
     height: Screen.desktopAvailableHeight * 0.7
@@ -23,7 +26,7 @@ ApplicationWindow {
             width: parent.width
             RadioButton {
                 id: getRadioButton
-                text: "GET"
+                text: qsTr("GET")
                 checked: true
                 exclusiveGroup: tabPositionGroup
             }
@@ -56,11 +59,27 @@ ApplicationWindow {
                     var url = urlTextField.text;
                     var content = inputTextArea.text;
 
+                    if(htmlRadioButton.checked === true)
+                    {
+                        if(method === qsTr('GET'))
+                        {
+                            webview.url = url
+                        }
+                        else
+                        {
+                            messageDialog.text = qsTr("Unsupport POST in HTML mode")
+                            messageDialog.visible = true;
+
+                        }
+                        return
+                    }
+
 
                     responseTextArea.text = '';
 
                     if(url.length===0)
                     {
+                        messageDialog.text = qsTr("The URL is invalid.")
                         messageDialog.visible = true;
                     }
                     else
@@ -93,13 +112,7 @@ ApplicationWindow {
 
         TextArea {
             id: inputTextArea
-            text:
-'content={
-    "Login": {
-        "account": "example-account",
-        "password":"example-password"
-    }
-}'
+            text:'content={\n    "Login": {\n        "account": "example-account",\n        "password":"example-password"\n    }\n}'
             textColor: "#0d51ff"
             antialiasing: true
             font.family: "Courier"
@@ -120,8 +133,7 @@ ApplicationWindow {
             id: messageDialog
             icon: StandardIcon.Information
             standardButtons: StandardButton.Ok
-            title: "Input error"
-            text: "The URL is invalid."
+            title: qsTr("Input error")
             Component.onCompleted: visible = false
         }
     }
@@ -134,8 +146,35 @@ ApplicationWindow {
         height: (parent.height - inputGroupBox.y - inputGroupBox.height) * 0.99
         title: qsTr("Response")
 
+        RowLayout {
+            id: rowLayout2
+            ExclusiveGroup { id: tabPositionGroup2 }
+            width: parent.width
+            RadioButton {
+                id: textRadioButton
+                text: qsTr("TEXT")
+                checked: true
+                exclusiveGroup: tabPositionGroup2
+                onClicked:{
+                    responseWebViewBox.visible = false
+                    responseTextArea.visible = true
+                }
+            }
+            RadioButton {
+                id: htmlRadioButton
+                text: qsTr("HTML")
+                anchors.left: textRadioButton.right
+                anchors.leftMargin: 10
+                exclusiveGroup: tabPositionGroup2
+                onClicked:{
+                    responseTextArea.visible = false
+                    responseWebViewBox.visible = true
+                }
+            }
+        }
         TextArea {
             id: responseTextArea
+            visible: true
             textColor: "#0d51ff"
             font.pointSize: 12
             font.family: "Courier"
@@ -143,6 +182,31 @@ ApplicationWindow {
             antialiasing: true
             anchors.fill: parent
             readOnly: true
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.top: rowLayout2.bottom
+            anchors.topMargin: rowLayout2.height
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+        }
+        Rectangle {
+            id: responseWebViewBox
+            visible: false
+            anchors.fill: parent
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.top: rowLayout2.bottom
+            anchors.topMargin: rowLayout2.height
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            WebView {
+                id: webview
+                anchors.fill: parent
+            }
         }
     }
 
